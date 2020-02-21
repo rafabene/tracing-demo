@@ -1,0 +1,31 @@
+version: '3'
+services:
+    jaeger:
+        image: jaegertracing/all-in-one:1.16
+        ports:
+        - "6831:6831/udp"
+        - "16686:16686"
+    frontend:
+        build:
+            context: "frontend"
+            dockerfile: "src/main/docker/Dockerfile.jvm"
+        ports:
+        - "8080:8080"
+        environment: 
+        - JAEGER_SERVICE_NAME=frontend
+        - JAEGER_SAMPLER_TYPE=const
+        - JAEGER_SAMPLER_PARAM=1
+        - JAEGER_REPORTER_LOG_SPANS=true
+        - JAEGER_AGENT_HOST=jaeger
+        - JAEGER_AGENT_PORT=6831
+    microserviceb:
+        build:
+            context: "microserviceB"
+        ports:
+            - "8081:8080"
+        environment: 
+        - OPENTRACING_JAEGER_SERVICE_NAME=microserviceB
+        - OPENTRACING_JAEGER_LOG_SPANS=true
+        - OPENTRACING_JAEGER_UDP-SENDER_HOST=jaeger
+        - OPENTRACING_JAEGER_UDP-SENDER_PORT=6831
+        
