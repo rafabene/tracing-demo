@@ -18,6 +18,7 @@ services:
         - JAEGER_REPORTER_LOG_SPANS=true
         - JAEGER_AGENT_HOST=jaeger
         - JAEGER_AGENT_PORT=6831
+        - com_rafabene_MicroserviceBService_mp_rest_url=http://microserviceb:8080/
     microserviceb:
         build:
             context: "microserviceB"
