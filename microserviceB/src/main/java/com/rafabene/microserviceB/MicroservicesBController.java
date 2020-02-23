@@ -14,17 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class MicroservicesBController {
 
-    private static int count = 0;
-
     @Autowired
-    private MessageRepository messageRepository;
+    private MyService service;
 
     @RequestMapping(path = "/db/{name}", method = RequestMethod.GET)
-    public String database(@PathVariable("name") String name){
-        String msg = "Microservice A (from frontend): " + name + " => Microservice B (save to DB): " + ++count;
-        Message message = new Message(msg);
-        messageRepository.save(message);
-        return msg;
+    public String dbEndpoint(@PathVariable("name") String name){    
+        return service.storeInDatabase(name);
     }
 
     @RequestMapping(path = "/chain/{name}", method = RequestMethod.GET)
