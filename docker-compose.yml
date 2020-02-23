@@ -29,4 +29,13 @@ services:
         - OPENTRACING_JAEGER_LOG_SPANS=true
         - OPENTRACING_JAEGER_UDP-SENDER_HOST=jaeger
         - OPENTRACING_JAEGER_UDP-SENDER_PORT=6831
-        
+        - SPRING_DATASOURCE_URL=jdbc:tracing:mysql://mysql/opentracing
+        depends_on: 
+        - mysql
+    mysql:
+        image: mysql:8
+        ports:
+            - "3306:3306"    
+        environment:
+        - MYSQL_ROOT_PASSWORD=123456
+        - MYSQL_DATABASE=opentracing
