@@ -3,8 +3,8 @@ services:
     jaeger:
         image: jaegertracing/all-in-one:1.16
         ports:
-        - "6831:6831/udp"
-        - "16686:16686"
+            - "6831:6831/udp"
+            - "16686:16686"
     frontend:
         build:
             context: "frontend"
@@ -23,7 +23,7 @@ services:
         build:
             context: "microserviceB"
         ports:
-            - "8081:8080"
+        - "8081:8080"
         environment: 
         - OPENTRACING_JAEGER_SERVICE_NAME=microserviceB
         - OPENTRACING_JAEGER_LOG_SPANS=true
@@ -35,7 +35,23 @@ services:
     mysql:
         image: mysql:8
         ports:
-            - "3306:3306"    
+        - "3306:3306"    
         environment:
         - MYSQL_ROOT_PASSWORD=123456
         - MYSQL_DATABASE=opentracing
+    zookeeper:
+        image: confluentinc/cp-zookeeper:latest
+        environment:
+        - ZOOKEEPER_CLIENT_PORT=32181
+        - ZOOKEEPER_TICK_TIME=2000     
+    kafka:
+        image: confluentinc/cp-kafka:latest
+        ports:
+        - "9092:9092"
+        depends_on:
+        - zookeeper
+        environment:
+        - KAFKA_BROKER_ID=1
+        - KAFKA_ZOOKEEPER_CONNECT=zookeeper:32181
+        - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+        - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1

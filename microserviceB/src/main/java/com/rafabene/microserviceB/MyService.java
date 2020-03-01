@@ -1,6 +1,7 @@
 package com.rafabene.microserviceB;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import io.opentracing.Scope;
@@ -16,8 +17,13 @@ public class MyService {
 
     private static int count = 0;
 
+    private static final String TOPIC = "myTopic";
+
     @Autowired
     private MessageRepository messageRepository;
+
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     @Autowired
     private Tracer tracer;
@@ -29,7 +35,7 @@ public class MyService {
         tracer.activateSpan(span);
         try{
             count++;
-            String msg = "Microservice A (from frontend): " + name + " => Microservice B (save to DB): " + count;
+            String msg = getMessage(name, "DB", count);
             span.log("Parameter: " + name + ", count=" + count );
             Message message = new Message(msg);
             messageRepository.save(message);
@@ -37,6 +43,16 @@ public class MyService {
         }finally{
             span.finish();
         }
+    }
+
+    public String storeInKafkaTopic(String name){
+        String msg = getMessage(name, "Kafka", count);
+        kafkaTemplate.send(TOPIC, msg);
+        return msg;
+    }
+
+    private String getMessage(String name, String dest, int count){
+        return "Microservice A (from frontend): " + name + " => Microservice B (save to " + dest + "): " + count;
     }
     
 }

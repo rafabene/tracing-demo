@@ -22,9 +22,9 @@ public class MicroservicesBController {
         return service.storeInDatabase(name);
     }
 
-    @RequestMapping(path = "/chain/{name}", method = RequestMethod.GET)
-    public String microserviceC(@PathVariable("name") String name){
-        return "MicroserviceC";
+    @RequestMapping(path = "/kafka/{name}", method = RequestMethod.GET)
+    public String kafkaEndpoint(@PathVariable("name") String name){    
+        return service.storeInKafkaTopic(name);
     }
     
 }

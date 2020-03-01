@@ -21,9 +21,9 @@ public interface MicroserviceBService {
     @Produces(MediaType.TEXT_PLAIN)
     public String db(@PathParam("name") String name);
 
-    @Path("/chain/{name}")
+    @Path("/kafka/{name}")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public String chain(@PathParam("name") String name);
+    public String kafka(@PathParam("name") String name);
     
 }
