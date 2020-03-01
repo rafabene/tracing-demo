@@ -1,6 +1,25 @@
 # tracing-demo
 Show how to use Opentracing with Quarkus, Spring Boot and NodeJS
 
-Just execute `./start-demo.sh`
+- microserviceA - port 8080 -(Quarkus)
+- microserviceB - port 8081 (Spring Boot)
+- microserviceC - port 3000 (NodeJS)
+
+Other services:
+- MySQL - port 3306
+- Kafka - port 9092
+- Jaeger - ports 6831 and 16686
+
+Just execute `./start-demo.sh`.
+
+This will:
+- compile java projects
+- run npm install
+- perform docker build
+- execute docker-compose up
+
+Then access: <http://localhost:8080/serial/Rafael>
+
+Tracing information should be available at <http://localhost:16686/>
 
 
