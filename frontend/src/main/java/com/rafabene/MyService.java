@@ -34,7 +34,8 @@ public class MyService {
         GlobalTracer.get().scopeManager().active().span().log("Parameter: " + name);
         final String db = microservice.db(name);
         final String kafka = microservice.kafka(name);
-        return "SERIAL: \n" + db + "\n" + kafka;
+        final String chain = microservice.chain(name);
+        return "SERIAL: \n" + db + "\n" + kafka + "\n" + chain;
     }
 
     @Traced
@@ -55,7 +56,13 @@ public class MyService {
                 return microservice.kafka(name);
             }
         });
-        final String result = "PARALLEL: \n" + Stream.of(dbFuture, kafkaFuture)
+        final CompletableFuture<String> chainFuture = CompletableFuture.supplyAsync(() -> {
+            // Activate the server span inside this task
+            try (Scope scope = tracer.scopeManager().activate(serverSpan, true)) {
+                return microservice.chain(name);
+            }
+        });
+        final String result = "PARALLEL: \n" + Stream.of(dbFuture, kafkaFuture, chainFuture)
             .map(CompletableFuture::join)
             .collect(Collectors.joining("\n"));
         return result;

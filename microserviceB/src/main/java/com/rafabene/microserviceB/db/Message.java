@@ -1,4 +1,4 @@
-package com.rafabene.microserviceB;
+package com.rafabene.microserviceb.db;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,7 +15,7 @@ public class Message {
     @Column
     private String content;
 
-    Message(String content){
+    public Message(String content){
         this.content = content;
     }
 

@@ -1,4 +1,4 @@
-package com.rafabene.microserviceB;
+package com.rafabene.microserviceb;
 
 import java.util.HashMap;
 import java.util.Map;

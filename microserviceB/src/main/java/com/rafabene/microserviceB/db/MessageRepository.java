@@ -1,4 +1,4 @@
-package com.rafabene.microserviceB;
+package com.rafabene.microserviceb.db;
 
 import org.springframework.data.repository.CrudRepository;
 

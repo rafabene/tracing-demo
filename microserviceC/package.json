@@ -1,0 +1,25 @@
+{
+  "name": "microservicec",
+  "version": "1.0.0",
+  "description": "Microservice C for Tracing demo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rafabene/tracing-demo.git"
+  },
+  "author": "Rafael Benevides",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rafabene/tracing-demo/issues"
+  },
+  "homepage": "https://github.com/rafabene/tracing-demo#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-opentracing": "^0.1.1",
+    "jaeger-client": "^3.17.2",
+    "opentracing": "^0.14.4"
+  }
+}

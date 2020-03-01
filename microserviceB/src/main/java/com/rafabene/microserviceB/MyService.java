@@ -1,13 +1,14 @@
-package com.rafabene.microserviceB;
+package com.rafabene.microserviceb;
+
+import com.rafabene.microserviceb.db.Message;
+import com.rafabene.microserviceb.db.MessageRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import io.opentracing.Scope;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
-import io.opentracing.util.GlobalTracer;
 
 /**
  * MyService
