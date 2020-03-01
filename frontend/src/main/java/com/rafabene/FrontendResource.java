@@ -17,7 +17,14 @@ public class FrontendResource {
     @Produces(MediaType.TEXT_PLAIN)
     @Path("/serial/{name}")
     public String serial(@PathParam("name") String name) {
-        return service.callMicroserviceB(name);
+        return service.callMicroserviceBSerial(name);
+    }
+
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("/parallel/{name}")
+    public String parallel(@PathParam("name") String name) {
+        return service.callMicroserviceBParallel(name);
     }
 
 }
