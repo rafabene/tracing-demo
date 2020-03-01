@@ -28,13 +28,17 @@ public class MyService {
     @Autowired
     private Tracer tracer;
 
+    private int getNextCount(){
+        return count++;
+    }
+
     public String storeInDatabase(String name){
         // Spring doesn't have @Traced annotation, thus we need to create
         // a Span manually. See: https://github.com/opentracing-contrib/java-spring-cloud/issues/98
         Span span = tracer.buildSpan("service call").start();
         tracer.activateSpan(span);
         try{
-            count++;
+            int count = getNextCount();
             String msg = getMessage(name, "DB", count);
             span.log("Parameter: " + name + ", count=" + count );
             Message message = new Message(msg);
@@ -46,7 +50,7 @@ public class MyService {
     }
 
     public String storeInKafkaTopic(String name){
-        String msg = getMessage(name, "Kafka", count);
+        String msg = getMessage(name, "Kafka", getNextCount());
         kafkaTemplate.send(TOPIC, msg);
         return msg;
     }
