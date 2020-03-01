@@ -3,10 +3,12 @@ package com.rafabene.microserviceb;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +28,7 @@ public class MicroservicesBController {
     @Autowired
     private MyService service;
 
+    private static final Logger LOG = Logger.getLogger("MicroservicesBController");
 
     @Value("${microservicec_URL}")
     private String msURL;
@@ -41,7 +44,10 @@ public class MicroservicesBController {
     }
 
     @RequestMapping(path = "/chain/{name}", method = RequestMethod.GET)
-    public String chain(@PathVariable("name") String name){  
+    public String chain(@PathVariable("name") String name, @RequestHeader Map<String, String> headers){  
+        headers.forEach((key, value) -> {
+            LOG.info(key + ":" + value);
+        });
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         RestTemplate restTemplate = new RestTemplate();

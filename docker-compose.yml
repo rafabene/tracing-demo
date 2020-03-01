@@ -7,12 +7,12 @@ services:
             - "16686:16686"
     frontend:
         build:
-            context: "frontend"
+            context: "microserviceA"
             dockerfile: "src/main/docker/Dockerfile.jvm"
         ports:
             - "8080:8080"
         environment: 
-            - JAEGER_SERVICE_NAME=frontend
+            - JAEGER_SERVICE_NAME=microserviceA
             - JAEGER_SAMPLER_TYPE=const
             - JAEGER_SAMPLER_PARAM=1
             - JAEGER_REPORTER_LOG_SPANS=true
