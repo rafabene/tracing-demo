@@ -30,6 +30,7 @@ services:
             - OPENTRACING_JAEGER_UDP-SENDER_HOST=jaeger
             - OPENTRACING_JAEGER_UDP-SENDER_PORT=6831
             - SPRING_DATASOURCE_URL=jdbc:tracing:mysql://mysql/opentracing
+            - KAFKA_URL=kafka:9092
             - MICROSERVICEC_URL=http://microservicec:3000/hello/{name}
         depends_on: 
             - mysql
