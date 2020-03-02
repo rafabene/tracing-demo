@@ -26,10 +26,16 @@ spec:
         env:
             - name: JAEGER_SERVICE_NAME
               value: "microserviceA"
-            - name: com_rafabene_MicroserviceBService_mp_rest_url
-              value: "http://microserviceb:8080/"
+            - name: JAEGER_PROPAGATION
+              value: "b3"
             - name: JAEGER_REPORTER_LOG_SPANS
               value: "true"
+            - name: JAEGER_AGENT_HOST
+              value: "jaeger-agent.istio-system"
+            - name: JAEGER_AGENT_PORT
+              value: "6831"
+            - name: com_rafabene_MicroserviceBService_mp_rest_url
+              value: "http://microserviceb:8080/"
         ports:
             - containerPort: 8080
               name: http-8080

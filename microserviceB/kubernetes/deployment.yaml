@@ -24,8 +24,16 @@ spec:
         image: rafabene/microserviceb
         imagePullPolicy: IfNotPresent
         env:
-            - name: JAEGER_SERVICE_NAME
+            - name: OPENTRACING_JAEGER_SERVICE_NAME
               value: "microserviceB"
+            - name: OPENTRACING_JAEGER_LOG_SPANS
+              value: "true"
+            - name: OPENTRACING_JAEGER_ENABLE-B3-PROPAGATION
+              value: "true"
+            - name: OPENTRACING_JAEGER_UDP-SENDER_HOST
+              value: "jaeger-agent.istio-system"
+            - name: OPENTRACING_JAEGER_UDP-SENDER_PORT
+              value: "6831"
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:tracing:mysql://mysql.db/opentracing"
             - name: MICROSERVICEC_URL

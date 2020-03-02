@@ -26,6 +26,14 @@ spec:
         env:
             - name: JAEGER_SERVICE_NAME
               value: "microserviceC"
+            - name: JAEGER_REPORTER_LOG_SPANS
+              value: "true"
+            - name: JAEGER_AGENT_HOST
+              value: "jaeger-agent.istio-system"
+            - name: JAEGER_AGENT_PORT
+              value: "6832"
+            - name: JAEGER_PROPAGATION
+              value: "b3"
         ports:
             - containerPort: 3000
               name: http-3000
