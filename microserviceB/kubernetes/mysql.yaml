@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: db
+  labels:
+    app: mysql
+    demo: tracing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8
+        imagePullPolicy: IfNotPresent
+        env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "123456"
+            - name: MYSQL_DATABASE
+              value: "opentracing"
+        ports:
+            - containerPort: 3306
+              name: tcp-3306
+              protocol: TCP
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mysql
+  namespace: db
+  labels:
+    app: mysql
+    demo: tracing
+spec:
+  selector:
+    app: mysql
+  type: NodePort
+  ports:
+  - protocol: TCP
+    name: tcp-3306
+    port: 3306
+    targetPort: 3306

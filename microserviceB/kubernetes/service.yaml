@@ -1,0 +1,17 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: microserviceb
+  namespace: tracing
+  labels:
+    app: microserviceb
+    demo: tracing
+spec:
+  selector:
+    app: microserviceb
+  type: NodePort
+  ports:
+  - protocol: TCP
+    name: http-8080
+    port: 8080
+    targetPort: 8080

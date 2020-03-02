@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microservicec
+  namespace: tracing
+  labels:
+    app: microservicec
+    version: v1
+    demo: tracing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: microservicec
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: microservicec
+        version: v1
+    spec:
+      containers:
+      - name: microservicec
+        image: rafabene/microservicec
+        imagePullPolicy: IfNotPresent
+        env:
+            - name: JAEGER_SERVICE_NAME
+              value: "microserviceC"
+        ports:
+            - containerPort: 3000
+              name: http-3000
+              protocol: TCP

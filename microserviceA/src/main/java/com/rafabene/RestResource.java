@@ -1,7 +1,6 @@
 package com.rafabene;
 
 import java.util.Enumeration;
-import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -26,8 +25,6 @@ public class RestResource {
     @Inject
     @RestClient
     MicroserviceBService microservice;
-
-    private static final Logger LOG = Logger.getLogger("RestResource");
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
@@ -54,7 +51,7 @@ public class RestResource {
             String headerValue = request.getHeader(headerName);
             sb.append(headerName + ":" + headerValue + "\n");
         }
-        LOG.info(sb.toString());
+        System.out.println(sb.toString());
         return "MicroserviceA ==> " + microservice.chain(name);
     }
 

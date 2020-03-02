@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microserviceb
+  namespace: tracing
+  labels:
+    app: microserviceb
+    version: v1
+    demo: tracing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: microserviceb
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: microserviceb
+        version: v1
+    spec:
+      containers:
+      - name: microserviceb
+        image: rafabene/microserviceb
+        imagePullPolicy: IfNotPresent
+        env:
+            - name: JAEGER_SERVICE_NAME
+              value: "microserviceB"
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:tracing:mysql://mysql.db/opentracing"
+            - name: MICROSERVICEC_URL
+              value: "http://microservicec:3000/hello/{name}"
+            - name: KAFKA_URL
+              value: "my-cluster-kafka-brokers.kafka.svc:9092"
+        ports:
+            - containerPort: 8080
+              name: http-8080
+              protocol: TCP

@@ -1,0 +1,17 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: microservicec
+  namespace: tracing
+  labels:
+    app: microservicec
+    demo: tracing
+spec:
+  selector:
+    app: microservicec
+  type: NodePort
+  ports:
+  - protocol: TCP
+    name: http-3000
+    port: 3000
+    targetPort: 3000

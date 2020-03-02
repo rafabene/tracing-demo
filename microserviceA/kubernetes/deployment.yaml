@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microservicea
+  namespace: tracing
+  labels:
+    app: microservicea
+    version: v1
+    demo: tracing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: microservicea
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: microservicea
+        version: v1
+    spec:
+      containers:
+      - name: microservicea
+        image: rafabene/microservicea
+        imagePullPolicy: IfNotPresent
+        env:
+            - name: JAEGER_SERVICE_NAME
+              value: "microserviceA"
+            - name: com_rafabene_MicroserviceBService_mp_rest_url
+              value: "http://microserviceb:8080/"
+            - name: JAEGER_REPORTER_LOG_SPANS
+              value: "true"
+        ports:
+            - containerPort: 8080
+              name: http-8080
+              protocol: TCP
