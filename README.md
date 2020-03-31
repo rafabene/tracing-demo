@@ -22,4 +22,4 @@ Then access: <http://localhost:8080/serial/Rafael>
 
 Tracing information should be available at <http://localhost:16686/>
 
-
+Slides are available at <http://bit.ly/cncfopentracing>
