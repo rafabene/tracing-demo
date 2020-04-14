@@ -24,14 +24,14 @@ public class MyService {
 
     @Inject
     @RestClient
-    MicroserviceBService microservice;
+    MicroserviceBService microserviceB;
 
     @Traced
     public String callMicroserviceBSerial(final String name) {
         GlobalTracer.get().scopeManager().active().span().log("Parameter: " + name);
-        final String db = microservice.db(name);
-        final String kafka = microservice.kafka(name);
-        final String chain = microservice.chain(name);
+        final String db = microserviceB.db(name);
+        final String kafka = microserviceB.kafka(name);
+        final String chain = microserviceB.chain(name);
         return "SERIAL: \n" + db + "\n" + kafka + "\n" + chain;
     }
 
@@ -44,19 +44,19 @@ public class MyService {
         final CompletableFuture<String> dbFuture = CompletableFuture.supplyAsync(() -> {
             // Activate the server span inside this task
             try (Scope scope = tracer.scopeManager().activate(serverSpan, true)) {
-                return microservice.db(name);
+                return microserviceB.db(name);
             }
         });
         final CompletableFuture<String> kafkaFuture = CompletableFuture.supplyAsync(() -> {
             // Activate the server span inside this task
             try (Scope scope = tracer.scopeManager().activate(serverSpan, true)) {
-                return microservice.kafka(name);
+                return microserviceB.kafka(name);
             }
         });
         final CompletableFuture<String> chainFuture = CompletableFuture.supplyAsync(() -> {
             // Activate the server span inside this task
             try (Scope scope = tracer.scopeManager().activate(serverSpan, true)) {
-                return microservice.chain(name);
+                return microserviceB.chain(name);
             }
         });
         final String result = "PARALLEL: \n" + Stream.of(dbFuture, kafkaFuture, chainFuture)

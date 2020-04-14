@@ -51,7 +51,7 @@ public class MicroservicesBController {
         restTemplate
             .setInterceptors(Collections.singletonList(
                 new TracingRestTemplateInterceptor(GlobalTracer.get())));
-        return "Microservice B ==> " + 
+        return "Microservice A (from frontend): " + name + " => Microservice B ==> " + 
             restTemplate
                 .getForEntity(msURL, String.class, params)
                 .getBody();
