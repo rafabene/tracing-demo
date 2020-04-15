@@ -57,7 +57,7 @@ public class MyService {
     }
 
     private String getMessage(String name, String dest, int count){
-        return "Microservice A (from frontend): " + name + " => Microservice B (save to " + dest + "): " + count;
+        return "Microservice B (save to " + dest + "): " + count;
     }
     
 }

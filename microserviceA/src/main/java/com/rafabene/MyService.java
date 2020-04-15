@@ -29,9 +29,10 @@ public class MyService {
     @Traced
     public String callMicroserviceBSerial(final String name) {
         GlobalTracer.get().scopeManager().active().span().log("Parameter: " + name);
-        final String db = microserviceB.db(name);
-        final String kafka = microserviceB.kafka(name);
-        final String chain = microserviceB.chain(name);
+        final String prefix = "Microservice A (from frontend): " + name + " => ";
+        final String db = prefix + microserviceB.db(name);
+        final String kafka = prefix + microserviceB.kafka(name);
+        final String chain = prefix + microserviceB.chain(name);
         return "SERIAL: \n" + db + "\n" + kafka + "\n" + chain;
     }
 
