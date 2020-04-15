@@ -26,18 +26,21 @@ public class MyService {
     @RestClient
     MicroserviceBService microserviceB;
 
+    final String prefix = "Microservice A (from frontend): %s => %s \n";
+
+
     @Traced
     public String callMicroserviceBSerial(final String name) {
         GlobalTracer.get().scopeManager().active().span().log("Parameter: " + name);
-        final String prefix = "Microservice A (from frontend): " + name + " => ";
-        final String db = prefix + microserviceB.db(name);
-        final String kafka = prefix + microserviceB.kafka(name);
-        final String chain = prefix + microserviceB.chain(name);
-        return "SERIAL: \n" + db + "\n" + kafka + "\n" + chain;
+        final String db = String.format(prefix, name, microserviceB.db(name));
+        final String kafka = String.format(prefix, name, microserviceB.kafka(name));
+        final String chain = String.format(prefix, name, microserviceB.chain(name));
+        return "SERIAL: \n" + db + kafka + chain;
     }
 
     @Traced
     public String callMicroserviceBParallel(final String name) {
+
         Tracer tracer = GlobalTracer.get();
         // We need to get server span to active it on each CompletableFuture
         Span serverSpan = tracer.scopeManager().active().span();
@@ -61,8 +64,10 @@ public class MyService {
             }
         });
         final String result = "PARALLEL: \n" + Stream.of(dbFuture, kafkaFuture, chainFuture)
-            .map(CompletableFuture::join)
-            .collect(Collectors.joining("\n"));
+            .map( (cf) -> {
+                return String.format(prefix, name, cf.join());
+            })
+            .collect(Collectors.joining());
         return result;
     }
 
