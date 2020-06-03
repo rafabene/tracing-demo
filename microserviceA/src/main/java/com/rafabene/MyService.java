@@ -8,7 +8,6 @@ import java.util.stream.Stream;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
@@ -30,9 +29,6 @@ public class MyService {
 
     final String prefix = "Microservice A (from frontend): %s => %s \n";
 
-    @Inject
-    private Config config;
-
     @Traced
     public String callMicroserviceBSerial(final String name) {
         GlobalTracer.get().scopeManager().activeSpan().log("Parameter: " + name);
@@ -51,19 +47,19 @@ public class MyService {
         serverSpan.log("Parameter: " + name);
         final CompletableFuture<String> dbFuture = CompletableFuture.supplyAsync(() -> {
             // Activate the server span inside this task
-            try (Scope scope = tracer.scopeManager().activate(serverSpan, true)) {
+            try (Scope scope = tracer.scopeManager().activate(serverSpan)) {
                 return microserviceB.db(name);
             }
         });
         final CompletableFuture<String> kafkaFuture = CompletableFuture.supplyAsync(() -> {
             // Activate the server span inside this task
-            try (Scope scope = tracer.scopeManager().activate(serverSpan, true)) {
+            try (Scope scope = tracer.scopeManager().activate(serverSpan)) {
                 return microserviceB.kafka(name);
             }
         });
         final CompletableFuture<String> chainFuture = CompletableFuture.supplyAsync(() -> {
             // Activate the server span inside this task
-            try (Scope scope = tracer.scopeManager().activate(serverSpan, true)) {
+            try (Scope scope = tracer.scopeManager().activate(serverSpan)) {
                 return microserviceB.chain(name);
             }
         });
