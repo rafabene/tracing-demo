@@ -13,9 +13,9 @@ services:
             - "8080:8080"
         environment: 
             - TRACING_SERVICE=microserviceA
-            - JAEGER_SAMPLER_TYPE=const
-            - JAEGER_SAMPLER_PARAM=1
-            - JAEGER_REPORTER_LOG_SPANS=true
+            - TRACING_SAMPLER_DASH_TYPE=const
+            - TRACING_SAMPLER_DASH_PARAM=1
+            - TRACING_LOG_DASH_SPANS=true
             - TRACING_PROTOCOL=udp
             - TRACING_HOST=jaeger
             - TRACING_PORT=6831
