@@ -12,7 +12,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 /**
  * MicroserviceService
  */
-@RegisterRestClient
+@RegisterRestClient(configKey = "serviceb")
 @RegisterClientHeaders
 public interface MicroserviceBService {
 

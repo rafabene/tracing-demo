@@ -4,21 +4,22 @@ services:
         image: jaegertracing/all-in-one:1.16
         ports:
             - "6831:6831/udp"
-            - "16686:16686"
+            - "16686:16686"            
     microservicea:
         build:
             context: "microserviceA"
-            dockerfile: "src/main/docker/Dockerfile.jvm"
+            dockerfile: "src/main/docker/Dockerfile.helidon"
         ports:
             - "8080:8080"
         environment: 
-            - JAEGER_SERVICE_NAME=microserviceA
+            - TRACING_SERVICE=microserviceA
             - JAEGER_SAMPLER_TYPE=const
             - JAEGER_SAMPLER_PARAM=1
             - JAEGER_REPORTER_LOG_SPANS=true
-            - JAEGER_AGENT_HOST=jaeger
-            - JAEGER_AGENT_PORT=6831
-            - com_rafabene_MicroserviceBService_mp_rest_url=http://microserviceb:8080/
+            - TRACING_PROTOCOL=udp
+            - TRACING_HOST=jaeger
+            - TRACING_PORT=6831
+            - serviceb_mp_dash_rest_url=http://microserviceb:8080/
     microserviceb:
         build:
             context: "microserviceB"
