@@ -1,6 +1,6 @@
 #!/bin/bash
 export DOCKER_HOST=tcp://192.168.100.100:2375
-(cd microserviceA; mvn clean package; docker build -t rafabene/microservicea -f src/main/docker/Dockerfile.jvm .)
+(cd microserviceA; mvn clean package; docker build -t rafabene/microservicea -f src/main/docker/Dockerfile.helidon .)
 (cd microserviceB; mvn clean package; docker build -t rafabene/microserviceb .)
 (cd microserviceC; npm install; docker build -t rafabene/microservicec .)
 kubectl create namespace tracing || echo

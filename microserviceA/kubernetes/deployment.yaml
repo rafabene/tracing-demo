@@ -24,17 +24,19 @@ spec:
         image: rafabene/microservicea
         imagePullPolicy: IfNotPresent
         env:
-            - name: JAEGER_SERVICE_NAME
+            - name: TRACING_SERVICE
               value: "microserviceA"
-            - name: JAEGER_PROPAGATION
+            - name: TRACING_PROPAGATION
               value: "b3"
-            - name: JAEGER_REPORTER_LOG_SPANS
+            - name: TRACING_LOG_DASH_SPANS
               value: "true"
-            - name: JAEGER_AGENT_HOST
+            - name: TRACING_PROTOCOL
+              value: "udp"
+            - name: TRACING_HOST
               value: "jaeger-agent.istio-system"
-            - name: JAEGER_AGENT_PORT
+            - name: TRACING_PORT
               value: "6831"
-            - name: com_rafabene_MicroserviceBService_mp_rest_url
+            - name: serviceb_mp_dash_rest_url
               value: "http://microserviceb:8080/"
         ports:
             - containerPort: 8080
