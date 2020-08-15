@@ -1,5 +1,5 @@
 #!/bin/bash
-export DOCKER_HOST=tcp://192.168.100.100:2375
+eval $(minikube -p demo docker-env)
 (cd microserviceA; mvn clean package; docker build -t rafabene/microservicea -f src/main/docker/Dockerfile.helidon .)
 (cd microserviceB; mvn clean package; docker build -t rafabene/microserviceb .)
 (cd microserviceC; npm install; docker build -t rafabene/microservicec .)
