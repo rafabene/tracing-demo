@@ -1,7 +1,7 @@
 # tracing-demo
-Show how to use Opentracing with Quarkus, Spring Boot and NodeJS
+Show how to use Opentracing with Helidon/MicroProfile, Spring Boot and NodeJS
 
-- microserviceA - port 8080 -(Quarkus)
+- microserviceA - port 8080 -(MicroProfile)
 - microserviceB - port 8081 (Spring Boot)
 - microserviceC - port 3000 (NodeJS)
 
