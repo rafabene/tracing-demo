@@ -1,74 +1,71 @@
-version: '3'
+version: "3"
 services:
-    jaeger:
-        image: jaegertracing/all-in-one:1.16
-        ports:
-            - "6831:6831/udp"
-            - "16686:16686"            
-    microservicea:
-        build:
-            context: "microserviceA"
-            dockerfile: "src/main/docker/Dockerfile.helidon"
-        ports:
-            - "8080:8080"
-        environment: 
-            - TRACING_SERVICE=microserviceA
-            - TRACING_SAMPLER_DASH_TYPE=const
-            - TRACING_SAMPLER_DASH_PARAM=1
-            - TRACING_LOG_DASH_SPANS=true
-            - TRACING_PROTOCOL=udp
-            - TRACING_HOST=jaeger
-            - TRACING_PORT=6831
-            - serviceb_mp_dash_rest_url=http://microserviceb:8080/
-    microserviceb:
-        build:
-            context: "microserviceB"
-        ports:
-            - "8081:8080"
-        environment: 
-            - OPENTRACING_JAEGER_SERVICE_NAME=microserviceB
-            - OPENTRACING_JAEGER_LOG_SPANS=true
-            - OPENTRACING_JAEGER_UDP-SENDER_HOST=jaeger
-            - OPENTRACING_JAEGER_UDP-SENDER_PORT=6831
-            - SPRING_DATASOURCE_URL=jdbc:tracing:mysql://mysql/opentracing
-            - KAFKA_URL=kafka:9092
-            - MICROSERVICEC_URL=http://microservicec:3000/hello/{name}
-        depends_on: 
-            - mysql
-    microservicec:
-        build:
-            context: "microserviceC"
-        ports:
-            - "3000:3000"
-        environment: 
-            - JAEGER_SERVICE_NAME=microserviceC
-            - JAEGER_SAMPLER_TYPE=const
-            - JAEGER_SAMPLER_PARAM=1
-            - JAEGER_REPORTER_LOG_SPANS=true
-            - JAEGER_AGENT_HOST=jaeger
-            - JAEGER_AGENT_PORT=6832
-        depends_on: 
-            - mysql
-    mysql:
-        image: mysql:8
-        ports:
-            - "3306:3306"    
-        environment:
-            - MYSQL_ROOT_PASSWORD=123456
-            - MYSQL_DATABASE=opentracing
-    zookeeper:
-        image: confluentinc/cp-zookeeper:latest
-        environment:
-            - ZOOKEEPER_CLIENT_PORT=32181
-            - ZOOKEEPER_TICK_TIME=2000     
-    kafka:
-        image: confluentinc/cp-kafka:latest
-        ports:
-            - "9092:9092"
-        depends_on:
-            - zookeeper
-        environment:
-            - KAFKA_BROKER_ID=1
-            - KAFKA_ZOOKEEPER_CONNECT=zookeeper:32181
-            - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
-            - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+  mysql:
+    hostname: mysql
+    image: mysql:8
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=opentracing
+  jaeger:
+    hostname: jaeger
+    image: jaegertracing/all-in-one:1.47
+    ports:
+      - "16686:16686" # Jaeger UI
+      - "4317:4317" # OTLP gRPC receiver
+      - "4318:4318" # OTLP HTTP receiver, not yet used by Quarkus, optional
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=32181
+      - ZOOKEEPER_TICK_TIME=2000
+  kafka:
+    hostname: kafka
+    image: confluentinc/cp-kafka:latest
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:32181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+  microservicec:
+    hostname: microservicec
+    build:
+      context: "microserviceC"
+    ports:
+      - "3000:3000"
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318
+    depends_on:
+      - mysql
+  microserviceb:
+    hostname: microserviceb
+    build:
+      context: "microserviceB"
+    ports:
+      - "8081:8080"
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - SPRING_DATASOURCE_URL=jdbc:otel:mysql://mysql/opentracing
+      - KAFKA_URL=kafka:9092
+      - MICROSERVICEC_URL=http://microservicec:3000/hello/{name}
+    depends_on:
+      - microservicec
+  microservicea:
+    hostname: microservicea
+    build:
+      context: "microserviceA"
+      dockerfile: "src/main/docker/Dockerfile.jvm"
+    ports:
+      - "8080:8080"
+    environment:
+      - QUARKUS_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://jaeger:4317
+      - quarkus_rest_client_serviceb_url=http://microserviceb:8080/
+    depends_on:
+      - microserviceb

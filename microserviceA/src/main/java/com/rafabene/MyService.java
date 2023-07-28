@@ -1,21 +1,16 @@
 package com.rafabene;
 
-
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
-import org.eclipse.microprofile.opentracing.Traced;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
-
-import io.opentracing.Scope;
-import io.opentracing.Span;
-import io.opentracing.Tracer;
-import io.opentracing.util.GlobalTracer;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.instrumentation.annotations.SpanAttribute;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 /**
  * MyService
@@ -29,45 +24,35 @@ public class MyService {
 
     final String prefix = "Microservice A (from frontend): %s => %s \n";
 
-    @Traced
-    public String callMicroserviceBSerial(final String name) {
-        GlobalTracer.get().scopeManager().activeSpan().log("Parameter: " + name);
+    @WithSpan
+    public String callMicroserviceBSerial(@SpanAttribute("Parameter") final String name) {
         final String db = String.format(prefix, name, microserviceB.db(name));
         final String kafka = String.format(prefix, name, microserviceB.kafka(name));
         final String chain = String.format(prefix, name, microserviceB.chain(name));
         return "SERIAL: \n" + db + kafka + chain;
     }
 
-    @Traced
+    @WithSpan
     public String callMicroserviceBParallel(final String name) {
-
-        Tracer tracer = GlobalTracer.get();
         // We need to get server span to active it on each CompletableFuture
-        Span serverSpan = tracer.scopeManager().activeSpan();
-        serverSpan.log("Parameter: " + name);
+        Span serverSpan = Span.current();
         final CompletableFuture<String> dbFuture = CompletableFuture.supplyAsync(() -> {
-            // Activate the server span inside this task
-            try (Scope scope = tracer.scopeManager().activate(serverSpan)) {
-                return microserviceB.db(name);
-            }
+            serverSpan.makeCurrent();
+            return microserviceB.db(name);
         });
         final CompletableFuture<String> kafkaFuture = CompletableFuture.supplyAsync(() -> {
-            // Activate the server span inside this task
-            try (Scope scope = tracer.scopeManager().activate(serverSpan)) {
-                return microserviceB.kafka(name);
-            }
+            serverSpan.makeCurrent();
+            return microserviceB.kafka(name);
         });
         final CompletableFuture<String> chainFuture = CompletableFuture.supplyAsync(() -> {
-            // Activate the server span inside this task
-            try (Scope scope = tracer.scopeManager().activate(serverSpan)) {
-                return microserviceB.chain(name);
-            }
+            serverSpan.makeCurrent();
+            return microserviceB.chain(name);
         });
         final String result = "PARALLEL: \n" + Stream.of(dbFuture, kafkaFuture, chainFuture)
-            .map( (cf) -> {
-                return String.format(prefix, name, cf.join());
-            })
-            .collect(Collectors.joining());
+                .map((cf) -> {
+                    return String.format(prefix, name, cf.join());
+                })
+                .collect(Collectors.joining());
         return result;
     }
 
