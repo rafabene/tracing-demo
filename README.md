@@ -1,6 +1,6 @@
 # tracing-demo
 
-Show how to use Opentracing with Quarkus/MicroProfile, Spring Boot and NodeJS
+Show how to use OpenTelemtry with Quarkus/MicroProfile, Spring Boot and NodeJS
 
 - microserviceA - port 8080 -(Quarkus/MicroProfile)
 - microserviceB - port 8081 (Spring Boot)
@@ -25,4 +25,4 @@ Then access: <http://localhost:8080/serial/Rafael>
 
 Tracing information should be available at <http://localhost:16686/>
 
-Slides are available at <http://bit.ly/cncfopentracing>
+Slides are available at <https://bit.ly/cncfopentelemetry>
