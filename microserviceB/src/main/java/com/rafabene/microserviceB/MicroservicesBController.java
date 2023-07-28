@@ -1,6 +1,5 @@
 package com.rafabene.microserviceb;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,12 +39,10 @@ public class MicroservicesBController {
         headers.forEach((key, value) -> {
             System.out.println(key + ":" + value);
         });
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
         RestTemplate restTemplate = new RestTemplate();
         return "Microservice B ==> " +
                 restTemplate
-                        .getForEntity(msURL, String.class, params)
+                        .getForEntity(msURL, String.class, Map.of("name", name))
                         .getBody();
     }
 
