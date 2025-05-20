@@ -7,16 +7,14 @@ services:
       - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=123456
-      - MYSQL_DATABASE=opentracing
-  jaeger:
-    hostname: jaeger
-    image: jaegertracing/all-in-one:1.47
+      - MYSQL_DATABASE=opentelemetry
+  lgtm:
+    hostname: lgtm
+    image: grafana/otel-lgtm
     ports:
-      - "16686:16686" # Jaeger UI
+      - "3001:3000" # Grafana UI
       - "4317:4317" # OTLP gRPC receiver
       - "4318:4318" # OTLP HTTP receiver, not yet used by Quarkus, optional
-    environment:
-      - COLLECTOR_OTLP_ENABLED=true
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -41,7 +39,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://lgtm:4318
     depends_on:
       - mysql
   microserviceb:
@@ -51,12 +49,12 @@ services:
     ports:
       - "8081:8080"
     environment:
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
-      - SPRING_DATASOURCE_URL=jdbc:otel:mysql://mysql/opentracing
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://lgtm:4317
+      - SPRING_DATASOURCE_URL=jdbc:otel:mysql://mysql/opentelemetry
       - KAFKA_URL=kafka:9092
       - MICROSERVICEC_URL=http://microservicec:3000/hello/{name}
     depends_on:
-      - microservicec
+      - mysql
   microservicea:
     hostname: microservicea
     build:
@@ -65,7 +63,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - QUARKUS_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://jaeger:4317
+      - QUARKUS_OTEL_EXPORTER_OTLP_ENDPOINT=http://lgtm:4317
       - quarkus_rest_client_serviceb_url=http://microserviceb:8080/
     depends_on:
       - microserviceb
