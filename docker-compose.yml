@@ -49,8 +49,8 @@ services:
     ports:
       - "8081:8080"
     environment:
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://lgtm:4317
-      - SPRING_DATASOURCE_URL=jdbc:otel:mysql://mysql/opentelemetry
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://lgtm:4318
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql/opentelemetry
       - KAFKA_URL=kafka:9092
       - MICROSERVICEC_URL=http://microservicec:3000/hello/{name}
     depends_on:

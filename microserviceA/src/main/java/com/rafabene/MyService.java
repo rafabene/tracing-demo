@@ -1,6 +1,7 @@
 package com.rafabene;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -11,6 +12,7 @@ import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.instrumentation.annotations.SpanAttribute;
 import io.opentelemetry.instrumentation.annotations.WithSpan;
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -19,6 +21,8 @@ import jakarta.inject.Inject;
  */
 @ApplicationScoped
 public class MyService {
+
+    private static final Logger LOG = Logger.getLogger("MyService");
 
     @Inject
     @RestClient
@@ -32,13 +36,18 @@ public class MyService {
     @WithSpan
     @Counted(value = "callMicroserviceB_count", description = "Count calls to Microservice A")
     public String callMicroserviceBSerial(@SpanAttribute("Parameter") final String name) {
+
         meter.histogramBuilder("cost_microserviceb_call")
                 .setDescription("Value of calls to Microservice B")
                 .setUnit("USD")
                 .build()
                 .record(0.1);
+
+        Log.info("Calling Microservice B DB");
         final String db = String.format(prefix, name, microserviceB.db(name));
+        Log.info("Calling Microservice B Kafka");
         final String kafka = String.format(prefix, name, microserviceB.kafka(name));
+        Log.info("Calling Microservice B Chain invocation");
         final String chain = String.format(prefix, name, microserviceB.chain(name));
         return "SERIAL: \n" + db + kafka + chain;
     }
