@@ -16,22 +16,28 @@ services:
       - "4317:4317" # OTLP gRPC receiver
       - "4318:4318" # OTLP HTTP receiver, not yet used by Quarkus, optional
   zookeeper:
-    image: confluentinc/cp-zookeeper:latest
+    image: confluentinc/cp-zookeeper:7.3.0
     environment:
-      - ZOOKEEPER_CLIENT_PORT=32181
-      - ZOOKEEPER_TICK_TIME=2000
+      ZOOKEEPER_CLIENT_PORT: 32181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "32181:32181"
   kafka:
     hostname: kafka
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:7.3.0
     ports:
       - "9092:9092"
     depends_on:
       - zookeeper
     environment:
-      - KAFKA_BROKER_ID=1
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:32181
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
-      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:32181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_HOST://kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:9093
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_HOST
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
   microservicec:
     hostname: microservicec
     build:
@@ -51,7 +57,7 @@ services:
     environment:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://lgtm:4318
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql/opentelemetry
-      - KAFKA_URL=kafka:9092
+      - KAFKA_URL=kafka:9093
       - MICROSERVICEC_URL=http://microservicec:3000/hello/{name}
     depends_on:
       - mysql
